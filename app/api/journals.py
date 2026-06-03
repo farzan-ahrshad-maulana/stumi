@@ -3,13 +3,24 @@ from fastapi import APIRouter
 from app.schemas.journal import (
     JournalCreate,
 )
+from app.services.metadata_service import (
+    extract_metadata,
+)
+from app.services.pdf_service import (
+    download_pdf,
+    extract_text,
+)
 
-router = APIRouter()
+router = APIRouter(prefix="/journals", tags=["journals"])
 
 
-@router.post("/journals")
-def create_journal(
-    payload: JournalCreate,
-):
+@router.post("/")
+def create_journal(payload: JournalCreate):
 
-    return {"pdf_url": payload.pdf_url}
+    pdf_bytes = download_pdf(payload.pdf_url)
+
+    text = extract_text(pdf_bytes)
+
+    metadata = extract_metadata(text)
+
+    return metadata
