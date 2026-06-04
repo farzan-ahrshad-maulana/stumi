@@ -6,6 +6,9 @@ from app.schemas.journal import (
     JournalCreate,
 )
 from app.services.journal_service import create_journal
+from app.services.llm_service import (
+    extract_metadata_with_llm,
+)
 from app.services.metadata_service import (
     extract_metadata,
 )
@@ -27,7 +30,7 @@ def create_journal_endpoint(
 
     text = extract_text(pdf_bytes)
 
-    metadata = extract_metadata(text)
+    metadata = extract_metadata_with_llm(text)
 
     journal = create_journal(
         db=db,
