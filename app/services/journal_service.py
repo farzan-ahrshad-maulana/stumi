@@ -1,0 +1,26 @@
+from sqlalchemy.orm import Session
+
+from app.db.models import Journal
+from app.services.metadata_service import ExtractedMetadata
+
+
+def create_journal(
+    db: Session,
+    metadata: ExtractedMetadata,
+    pdf_url: str,
+) -> Journal:
+
+    journal = Journal(
+        title=metadata.title,
+        authors=metadata.authors,
+        abstract=metadata.abstract,
+        pdf_url=pdf_url,
+    )
+
+    db.add(journal)
+
+    db.commit()
+
+    db.refresh(journal)
+
+    return journal
