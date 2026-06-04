@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 
 from app.db.models import Journal
-from app.services.metadata_service import ExtractedMetadata
+from app.schemas.metadata import LLMMetadata
 
 
 def create_journal(
     db: Session,
-    metadata: ExtractedMetadata,
+    metadata: LLMMetadata,
     pdf_url: str,
 ) -> Journal:
 
