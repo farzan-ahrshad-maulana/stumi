@@ -1,7 +1,10 @@
+import json
 import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
+
+from app.schemas.metadata import LLMMetadata
 
 load_dotenv()
 
@@ -27,22 +30,25 @@ def extract_metadata_with_llm(
             {
                 "role": "system",
                 "content": """
-Extract metadata from an academic paper.
+You are an academic paper metadata extractor.
 
 Return ONLY valid JSON.
 
-Fields:
-- title
-- authors
-- institution
-- abstract
-- publication_year
+Schema:
+
+{
+  "title": "...",
+  "authors": "...",
+  "institution": "...",
+  "abstract": "...",
+  "publication_year": 2024
+}
+
+Do not use markdown.
+Do not wrap JSON in code fences.
 """,
             },
-            {
-                "role": "user",
-                "content": preview,
-            },
+            {"role": "user", "content": preview},
         ],
         temperature=0,
     )
