@@ -64,3 +64,22 @@ def academic_structure_validation(
         )
 
     return True, ""
+
+
+def validate_pdf_url(
+    pdf_url: str,
+) -> tuple[bool, str]:
+
+    if not pdf_url.startswith("https://"):
+        return (
+            False,
+            "Only HTTPS URLs are allowed",
+        )
+
+    if not pdf_url.lower().endswith(".pdf"):
+        return (
+            False,
+            "URL must point to a PDF file",
+        )
+
+    return True, ""

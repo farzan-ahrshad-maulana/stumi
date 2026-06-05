@@ -21,3 +21,19 @@ def get_journal_by_pdf_url(
     pdf_url: str,
 ):
     return db.query(Journal).filter(Journal.pdf_url == pdf_url).first()
+
+
+def get_journal_by_title_and_year(
+    db: Session,
+    title: str,
+    publication_year: int,
+):
+
+    return (
+        db.query(Journal)
+        .filter(
+            Journal.title == title,
+            Journal.publication_year == publication_year,
+        )
+        .first()
+    )

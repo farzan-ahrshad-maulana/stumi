@@ -7,6 +7,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    Integer,
     String,
     Text,
 )
@@ -33,6 +34,10 @@ class Journal(Base):
 
     volume: Mapped[str | None] = mapped_column(String(50), nullable=True)
     publication_date: Mapped[Date | None] = mapped_column(Date, nullable=True)
+    publication_year: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
     abstract: Mapped[str] = mapped_column(Text)
 
     pdf_url: Mapped[str] = mapped_column(Text)

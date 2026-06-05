@@ -24,6 +24,7 @@ from app.services.pdf_service import (
 from app.services.validation_service import (
     basic_validation,
     validate_metadata,
+    validate_pdf_url,
 )
 from app.services.vector_store_service import (
     store_chunks,
@@ -37,7 +38,17 @@ def create_journal_endpoint(
     payload: JournalCreate,
     db: Session = Depends(get_db),
 ):
+    is_valid, reason = validate_pdf_url(
+        payload.pdf_url,
+    )
 
+    if not is_valid:
+        logger.warning(reason)
+
+        return {
+            "status": "rejected",
+            "reason": reason,
+        }
     try:
         logger.info(f"New journal submission: {payload.pdf_url}")
 

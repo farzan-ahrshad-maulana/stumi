@@ -14,6 +14,7 @@ def create_journal(
         title=metadata.title,
         authors=metadata.authors,
         institution=metadata.institution,
+        publication_year=metadata.publication_year,
         abstract=metadata.abstract,
         pdf_url=pdf_url,
     )
