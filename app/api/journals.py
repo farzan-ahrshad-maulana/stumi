@@ -73,6 +73,14 @@ def create_journal_endpoint(
 
     metadata = extract_metadata_with_llm(text)
 
+    is_valid, reason = validate_metadata(metadata)
+
+    if not is_valid:
+        return {
+            "status": "rejected",
+            "reason": reason,
+        }
+
     validation = validate_research_paper(text)
 
     if not validation.is_research_paper or validation.confidence < 0.8:
