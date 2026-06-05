@@ -55,6 +55,14 @@ def create_journal_endpoint(
 
     text = extract_text(pdf_bytes)
 
+    is_valid, reason = basic_validation(text)
+
+    if not is_valid:
+        return {
+            "status": "rejected",
+            "reason": reason,
+        }
+
     is_valid, error = basic_validation(text)
 
     if not is_valid:
