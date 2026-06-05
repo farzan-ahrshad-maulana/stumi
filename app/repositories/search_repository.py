@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 def search_chunks(
     db: Session,
     embedding: list[float],
+    journal_id: int,
     limit: int = 5,
 ):
 
@@ -21,6 +22,7 @@ def search_chunks(
         FROM chunks c
         JOIN journals j
             ON c.journal_id = j.id
+        WHERE c.journal_id = :journal_id
         ORDER BY embedding <=> CAST(:embedding AS vector)
         LIMIT :limit
         """
@@ -30,6 +32,7 @@ def search_chunks(
         query,
         {
             "embedding": str(embedding),
+            "journal_id": journal_id,
             "limit": limit,
         },
     )

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.dependencies import get_db
 from app.repositories.journal_repository import (
     get_journal_by_id,
+    get_journal_by_pdf_url,
     get_journals,
 )
 from app.schemas.journal import (
@@ -32,6 +33,18 @@ def create_journal_endpoint(
     payload: JournalCreate,
     db: Session = Depends(get_db),
 ):
+
+    existing = get_journal_by_pdf_url(
+        db=db,
+        pdf_url=payload.pdf_url,
+    )
+
+    if existing:
+        return {
+            "id": existing.id,
+            "title": existing.title,
+            "status": "already_exists",
+        }
 
     pdf_bytes = download_pdf(payload.pdf_url)
 

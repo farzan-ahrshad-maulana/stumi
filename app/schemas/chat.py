@@ -5,5 +5,6 @@ class ChatRequest(BaseModel):
     question: str
 
 
-class ChatResponse(BaseModel):
-    answer: str
+class ChatRequest(BaseModel):
+    journal_id: int
+    question: str

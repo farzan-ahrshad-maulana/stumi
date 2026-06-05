@@ -10,11 +10,13 @@ from app.services.retrieval_service import (
 
 def ask_question(
     db: Session,
+    journal_id: int,
     question: str,
 ):
 
     results = retrieve_chunks(
         db=db,
+        journal_id=journal_id,
         question=question,
         limit=5,
     )

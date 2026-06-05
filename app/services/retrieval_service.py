@@ -10,6 +10,7 @@ from app.services.embedding_service import (
 
 def retrieve_chunks(
     db: Session,
+    journal_id: int,
     question: str,
     limit: int = 5,
 ):
@@ -19,6 +20,7 @@ def retrieve_chunks(
     results = search_chunks(
         db=db,
         embedding=question_embedding,
+        journal_id=journal_id,
         limit=limit,
     )
 
