@@ -25,6 +25,7 @@ from app.services.pdf_service import (
 from app.services.validation_service import (
     basic_validation,
     validate_metadata,
+    validate_page_count,
     validate_pdf_size,
     validate_pdf_url,
     validate_text_pdf,
@@ -80,6 +81,17 @@ def create_journal_endpoint(
                 "status": "rejected",
                 "reason": reason,
             }
+
+        is_valid, reason = validate_page_count(pdf_bytes)
+
+        if not is_valid:
+            logger.warning(reason)
+
+            return {
+                "status": "rejected",
+                "reason": reason,
+            }
+
         is_valid, reason = validate_text_pdf(pdf_bytes)
 
         if not is_valid:

@@ -142,3 +142,32 @@ def validate_pdf_size(
         )
 
     return True, ""
+
+
+def validate_page_count(
+    pdf_bytes: bytes,
+) -> tuple[bool, str]:
+
+    max_pages = 100
+
+    try:
+        reader = PdfReader(BytesIO(pdf_bytes))
+
+        page_count = len(reader.pages)
+
+        if page_count > max_pages:
+            return (
+                False,
+                f"PDF exceeds maximum page limit ({max_pages} pages)",
+            )
+
+        return (
+            True,
+            "",
+        )
+
+    except Exception:
+        return (
+            False,
+            "Unable to read PDF",
+        )
