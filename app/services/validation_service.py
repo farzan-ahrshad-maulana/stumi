@@ -1,3 +1,7 @@
+from io import BytesIO
+
+from pypdf import PdfReader
+
 from app.core.logger import logger
 from app.schemas.metadata import LLMMetadata
 
@@ -80,6 +84,61 @@ def validate_pdf_url(
         return (
             False,
             "URL must point to a PDF file",
+        )
+
+    return True, ""
+
+
+def validate_text_pdf(
+    pdf_bytes: bytes,
+) -> tuple[bool, str]:
+
+    try:
+        reader = PdfReader(BytesIO(pdf_bytes))
+
+        pages_to_check = min(
+            5,
+            len(reader.pages),
+        )
+
+        total_chars = 0
+
+        for i in range(pages_to_check):
+            text = reader.pages[i].extract_text()
+
+            if text:
+                total_chars += len(text.strip())
+
+        if total_chars < 500:
+            return (
+                False,
+                "PDF appears to be image-based or scanned",
+            )
+
+        return (
+            True,
+            "",
+        )
+
+    except Exception:
+        return (
+            False,
+            "Invalid PDF file",
+        )
+
+
+def validate_pdf_size(
+    pdf_bytes: bytes,
+) -> tuple[bool, str]:
+
+    max_size_mb = 25
+
+    file_size_mb = len(pdf_bytes) / (1024 * 1024)
+
+    if file_size_mb > max_size_mb:
+        return (
+            False,
+            f"PDF exceeds maximum size limit ({max_size_mb} MB)",
         )
 
     return True, ""

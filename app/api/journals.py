@@ -8,6 +8,7 @@ from app.db.dependencies import get_db
 from app.repositories.journal_repository import (
     get_journal_by_id,
     get_journal_by_pdf_url,
+    get_journal_by_title_and_year,
     get_journals,
 )
 from app.schemas.journal import (
@@ -24,7 +25,9 @@ from app.services.pdf_service import (
 from app.services.validation_service import (
     basic_validation,
     validate_metadata,
+    validate_pdf_size,
     validate_pdf_url,
+    validate_text_pdf,
 )
 from app.services.vector_store_service import (
     store_chunks,
@@ -68,6 +71,24 @@ def create_journal_endpoint(
             }
 
         pdf_bytes = download_pdf(payload.pdf_url)
+        is_valid, reason = validate_pdf_size(pdf_bytes)
+
+        if not is_valid:
+            logger.warning(reason)
+
+            return {
+                "status": "rejected",
+                "reason": reason,
+            }
+        is_valid, reason = validate_text_pdf(pdf_bytes)
+
+        if not is_valid:
+            logger.warning(reason)
+
+            return {
+                "status": "rejected",
+                "reason": reason,
+            }
         logger.info(f"PDF downloaded ({len(pdf_bytes)} bytes)")
 
         text = extract_text(pdf_bytes)
@@ -87,6 +108,21 @@ def create_journal_endpoint(
 
         metadata_start = time.time()
         metadata = extract_metadata_with_llm(text)
+        existing = get_journal_by_title_and_year(
+            db=db,
+            title=metadata.title,
+            publication_year=metadata.publication_year,
+        )
+
+        if existing:
+            logger.info(f"Duplicate paper detected: {existing.id}")
+
+            return {
+                "id": existing.id,
+                "title": existing.title,
+                "status": "already_exists",
+            }
+
         logger.info(
             f"Metadata extraction took {round(time.time() - metadata_start, 2)}s"
         )
