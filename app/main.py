@@ -1,9 +1,11 @@
 from fastapi import FastAPI
+from sqlalchemy import text
 
 from app.api.chat import (
     router as chat_router,
 )
 from app.api.journals import router as journal_router
+from app.db.database import engine
 
 app = FastAPI(title="Stumi", version="0.1.0")
 app.include_router(journal_router)
@@ -17,4 +19,18 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "healthy"}
+
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+
+        return {
+            "status": "healthy",
+            "database": "connected",
+        }
+
+    except Exception:
+        return {
+            "status": "unhealthy",
+            "database": "disconnected",
+        }

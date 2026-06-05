@@ -23,21 +23,30 @@ def chat(
     payload: ChatRequest,
     db: Session = Depends(get_db),
 ):
+    try:
+        start_time = time.time()
+        logger.info(f"Question received for journal {payload.journal_id}")
+        start_time = time.time()
 
-    logger.info(f"Question received for journal {payload.journal_id}")
-    start_time = time.time()
+        result = ask_question(
+            db=db,
+            journal_id=payload.journal_id,
+            question=payload.question,
+        )
 
-    result = ask_question(
-        db=db,
-        journal_id=payload.journal_id,
-        question=payload.question,
-    )
+        duration = round(
+            time.time() - start_time,
+            2,
+        )
 
-    duration = round(
-        time.time() - start_time,
-        2,
-    )
+        logger.info(f"Chat completed in {duration}s")
 
-    logger.info(f"Chat completed in {duration}s")
+        return result
 
-    return result
+    except Exception as e:
+        logger.exception("Chat request failed")
+
+        return {
+            "status": "error",
+            "message": str(e),
+        }
