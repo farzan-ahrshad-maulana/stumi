@@ -7,6 +7,7 @@ from app.api.journals import router as journal_router
 
 app = FastAPI(title="Stumi", version="0.1.0")
 app.include_router(journal_router)
+app.include_router(chat_router)
 
 
 @app.get("/")
