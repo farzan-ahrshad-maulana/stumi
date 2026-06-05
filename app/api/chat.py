@@ -1,6 +1,9 @@
+import time
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.core.logger import logger
 from app.db.dependencies import get_db
 from app.schemas.chat import (
     ChatRequest,
@@ -21,10 +24,20 @@ def chat(
     db: Session = Depends(get_db),
 ):
 
+    logger.info(f"Question received for journal {payload.journal_id}")
+    start_time = time.time()
+
     result = ask_question(
         db=db,
         journal_id=payload.journal_id,
         question=payload.question,
     )
+
+    duration = round(
+        time.time() - start_time,
+        2,
+    )
+
+    logger.info(f"Chat completed in {duration}s")
 
     return result
