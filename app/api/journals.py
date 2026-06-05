@@ -75,3 +75,27 @@ def list_journals(
         }
         for journal in journals
     ]
+
+
+@router.get("/{journal_id}")
+def get_journal(
+    journal_id: int,
+    db: Session = Depends(get_db),
+):
+
+    journal = get_journal_by_id(
+        db,
+        journal_id,
+    )
+
+    if not journal:
+        return {"error": "Journal not found"}
+
+    return {
+        "id": journal.id,
+        "title": journal.title,
+        "authors": journal.authors,
+        "institution": journal.institution,
+        "abstract": journal.abstract,
+        "pdf_url": journal.pdf_url,
+    }
