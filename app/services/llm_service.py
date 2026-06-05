@@ -74,17 +74,6 @@ Do not wrap JSON in code fences.
 
     content = response.choices[0].message.content
 
-    content = content.strip()
-
-    match = re.search(
-        r"\{.*\}",
-        content,
-        re.DOTALL,
-    )
-
-    if not match:
-        raise ValueError(f"No JSON found in response: {content}")
-
     data = parse_json_response(content)
 
     return LLMMetadata(**data)

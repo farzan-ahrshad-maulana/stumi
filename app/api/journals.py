@@ -54,7 +54,24 @@ def create_journal_endpoint(
 
     text = extract_text(pdf_bytes)
 
+    is_valid, error = basic_validation(text)
+
+    if not is_valid:
+        return {
+            "status": "rejected",
+            "reason": error,
+        }
+
     metadata = extract_metadata_with_llm(text)
+
+    validation = validate_research_paper(text)
+
+    if not validation.is_research_paper or validation.confidence < 0.8:
+        return {
+            "status": "rejected",
+            "reason": validation.reason,
+            "confidence": validation.confidence,
+        }
 
     journal = create_journal(
         db=db,
